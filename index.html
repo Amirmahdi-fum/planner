@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>Study Planner</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#6c8cff">
+  <meta name="color-scheme" content="dark light">
+  <meta name="application-name" content="Study Planner">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Study Planner">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="./detect.js"></script>
+  <link rel="stylesheet" href="./style.css">
+  <!-- Supabase JS SDK (async, optional — sync features degrade gracefully if
+       absent/slow). async so it never blocks first paint; sync.js polls for
+       window.supabase via ensureClientWithRetry() and wires up as soon as the
+       script lands. sync.js itself stays a normal (blocking) script so it runs
+       before app.js boots and is ready to hook saves. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" async></script>
+  <script src="./sync.js" defer></script>
+</head>
+
+<body>
+  <button class="mobile-hamburger" data-action="toggleDrawer" aria-label="Menu">
+    <div class="ham-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </button>
+  <div class="drawer-overlay" data-action="closeDrawer"></div>
+  <div class="bg-decor">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <svg class="logo-svg" viewBox="0 0 48 48" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" style="stop-color:var(--accent)" />
+              <stop offset="1" style="stop-color:var(--accent2)" />
+            </linearGradient>
+          </defs>
+          <g class="cap">
+            <polygon points="24,7 45,16 24,25 3,16" fill="url(#lg)" />
+            <path d="M11 19.5 V28 C11 31.8 17 35 24 35 C31 35 37 31.8 37 28 V19.5 L24 26 Z" fill="url(#lg)"
+              opacity="0.5" />
+          </g>
+          <line x1="45" y1="16" x2="45" y2="29" stroke="var(--accent2)" stroke-width="1.6" />
+          <circle cx="45" cy="31" r="2.5" fill="var(--accent2)" />
+        </svg>
+        <div>
+          <div class="brand-title" data-i18n="appName"></div>
+          <div class="brand-sub" data-i18n="appSub"></div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-action="goView" data-arg="myday"><span class="ni-ico">&#x2600;&#xFE0F;</span><span
+            data-i18n="nav_myday"></span><span class="ni-badge" id="badge-myday">0</span></button>
+        <button class="nav-item" data-action="goView" data-arg="tasks"><span class="ni-ico">&#x1F4CB;</span><span
+            data-i18n="nav_tasks"></span><span class="ni-badge" id="badge-tasks">0</span></button>
+        <button class="nav-item" data-action="goView" data-arg="week"><span class="ni-ico">&#x1F5D3;&#xFE0F;</span><span
+            data-i18n="nav_week"></span></button>
+        <button class="nav-item" data-action="goView" data-arg="calendar"><span class="ni-ico">📅</span><span
+            data-i18n="nav_calendar"></span></button>
+        <button class="nav-item" data-action="goView" data-arg="review"><span class="ni-ico">&#x1F4CA;</span><span
+            data-i18n="nav_review"></span></button>
+        <button class="nav-item" data-action="goView" data-arg="exams"><span class="ni-ico">&#x1F4DD;</span><span
+            data-i18n="nav_exams"></span><span class="ni-badge" id="badge-exams">0</span></button>
+<button class="nav-item" data-action="goView" data-arg="focus"><span class="ni-ico">&#x1F3AF;</span><span
+            data-i18n="nav_focus"></span></button>
+<button class="nav-item" data-action="goView" data-arg="srs"><span class="ni-ico">&#x1F9E0;</span><span
+            data-i18n="nav_srs"></span><span class="ni-badge" id="badge-srs">0</span></button>
+<button class="nav-item" data-action="goView" data-arg="ai"><span class="ni-ico">&#x1F916;</span><span
+            data-i18n="nav_ai"></span></button>
+        <button class="nav-item" data-action="goView" data-arg="settings"><span class="ni-ico">&#x2699;&#xFE0F;</span><span
+            data-i18n="nav_settings"></span></button>
+      </nav>
+      <div class="side-foot">
+        <div>
+          <div class="mini-stat"><b id="m-pct">0%</b><span data-i18n="progress_total"></span></div>
+          <div class="progress"><i id="m-bar"></i></div>
+        </div>
+        <div class="lang-mini"><button id="lm-fa" data-action="setLang" data-arg="fa">فارسی</button><button id="lm-en"
+            data-action="setLang" data-arg="en">EN</button></div>
+        <div class="notif-center" id="notif-center" style="display:none">
+          <button class="notif-bell" data-action="toggleNotifCenter" title="">
+            &#x1F514;<span class="notif-badge" id="notif-badge-legacy" style="display:none">0</span>
+          </button>
+        </div>
+        <button class="profile-chip" data-action="goView" data-arg="settings"><span class="avatar-sm" id="side-avatar">?</span><span
+            class="pc-info"><b id="side-name"></b><small id="side-uni"></small></span></button>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <button class="topbar-install" id="topbar-install" data-action="promptInstall" style="display:none" title="">
+          <span class="ti-ico">&#x1F4E5;</span><span class="ti-txt" data-i18n="install_btn"></span>
+        </button>
+        <button class="sync-chip" id="sync-chip" data-action="openSyncHub" title="">
+          <span class="sc-ico-cloud">&#x2601;</span>
+          <span class="sc-txt">—</span>
+          <span class="sc-dot state-off"></span>
+        </button>
+        <button class="topbar-bell" id="topbar-bell" data-action="toggleNotifCenter" title="">
+          &#x1F514;<span class="notif-badge" id="notif-badge" style="display:none">0</span>
+        </button>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-header">
+            <h4>&#x1F514; <span data-i18n="notif_title"></span></h4>
+            <button class="ghost sm" data-action="clearAllNotifications" data-i18n="notif_clear"></button>
+          </div>
+          <div id="notif-list" class="notif-list"></div>
+        </div>
+      </div>
+
+      <section class="view active" id="view-myday">
+        <div class="myday-hero">
+          <div class="myday-left">
+            <h1 class="myday-greet" id="greet"></h1>
+            <div class="myday-dt">
+              <span class="myday-clock" id="mc-time">--:--:--</span>
+              <span class="myday-sep">&#x2022;</span>
+              <span class="myday-date" id="today-label"></span>
+            </div>
+            <div class="myday-stats">
+              <div class="mds"><span class="mds-ico">&#x2705;</span>
+                <div><b id="md-done">0</b><small data-i18n="t_done"></small></div>
+              </div>
+              <div class="mds"><span class="mds-ico">&#x1F4CB;</span>
+                <div><b id="md-remaining">0</b><small data-i18n="t_remaining"></small></div>
+              </div>
+              <div class="mds"><span class="mds-ico">&#x23F1;&#xFE0F;</span>
+                <div><b id="md-focusmin">0</b><small data-i18n="focusmin_lbl"></small></div>
+              </div>
+            </div>
+          </div>
+          <div class="myday-ring"><svg class="mini-ring" viewBox="0 0 84 84">
+              <circle class="mr-bg" cx="42" cy="42" r="34" />
+              <circle class="mr-fg" id="day-ring" cx="42" cy="42" r="34" />
+            </svg><span id="day-pct" class="myday-ring-pct">0%</span></div>
+        </div>
+        <div class="panel add-panel myday-add">
+          <div class="myday-add-grid">
+            <input id="md-title" data-i18n-ph="myday_addph"  />
+            <div class="myday-add-row"><input id="md-subject" data-i18n-ph="subject" /><input id="md-time" type="time"
+                style="max-width:140px;direction:ltr" /><button class="btn" data-action="addMyDay">&#x2795;</button></div>
+          </div>
+        </div>
+        <div id="myday-list" class="task-list"></div>
+        <div class="panel mood-card" id="mood-card">
+          <div class="mood-card-head">
+            <h3><span>&#x1F3AD;</span><span data-i18n="mood_card_title"></span></h3>
+            <span class="mood-today-tag" id="mood-today-tag" data-i18n="mood_today"></span>
+          </div>
+          <p class="mood-prompt muted" data-i18n="mood_prompt"></p>
+          <div class="mood-row" id="mood-row">
+            <button class="mood-btn" data-action="setMood" data-arg="1" title="1"><span class="ni-badge">1</span><span class="mb-emo">&#x1F634;</span><span class="mb-lbl" data-i18n="mood_1"></span></button>
+            <button class="mood-btn" data-action="setMood" data-arg="2" title="2"><span class="ni-badge">2</span><span class="mb-emo">&#x1F614;</span><span class="mb-lbl" data-i18n="mood_2"></span></button>
+            <button class="mood-btn" data-action="setMood" data-arg="3" title="3"><span class="ni-badge">3</span><span class="mb-emo">&#x1F610;</span><span class="mb-lbl" data-i18n="mood_3"></span></button>
+            <button class="mood-btn" data-action="setMood" data-arg="4" title="4"><span class="ni-badge">4</span><span class="mb-emo">&#x1F642;</span><span class="mb-lbl" data-i18n="mood_4"></span></button>
+            <button class="mood-btn" data-action="setMood" data-arg="5" title="5"><span class="ni-badge">5</span><span class="mb-emo">&#x1F604;</span><span class="mb-lbl" data-i18n="mood_5"></span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-tasks">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x1F4CB;</span><span data-i18n="tasks_title"></span></h1>
+            <p class="muted" data-i18n="tasks_sub"></p>
+          </div>
+          <div class="chips">
+            <div class="chip"><b id="s-pending">0</b> <span data-i18n="t_remaining"></span></div>
+            <div class="chip ok"><b id="s-done">0</b> <span data-i18n="t_done"></span></div>
+            <div class="chip no"><b id="s-fail">0</b> <span data-i18n="t_late"></span></div>
+          </div>
+        </header>
+        <div class="panel add-panel">
+          <h3><span id="add-h-ico">&#x2795;</span> <span id="add-h-txt" data-i18n="newtask"></span></h3>
+          <input id="f-title" class="ap-title" data-i18n-ph="title_ph"
+             />
+          <div class="seg" id="type-seg">
+            <button type="button" data-type="study" class="active"
+              data-action="pickSeg" data-arg="type"><span>&#x1F4D6;</span><span data-i18n="type_study"></span></button>
+            <button type="button" data-type="practice" data-action="pickSeg" data-arg="type"><span>&#x270F;&#xFE0F;</span><span
+                data-i18n="type_practice"></span></button>
+            <button type="button" data-type="review" data-action="pickSeg" data-arg="type"><span>&#x1F501;</span><span
+                data-i18n="type_review"></span></button>
+            <button type="button" data-type="assignment" data-action="pickSeg" data-arg="type"><span>&#x1F4CC;</span><span
+                data-i18n="type_assignment"></span></button>
+          </div>
+          <input type="hidden" id="f-type" value="study">
+          <div class="seg prio" id="prio-seg">
+            <button type="button" data-priority="high" class="ph"
+              data-action="pickSeg" data-arg="priority"><span>&#x1F534;</span><span data-i18n="p_high"></span></button>
+            <button type="button" data-priority="mid" class="pm active"
+              data-action="pickSeg" data-arg="priority"><span>&#x1F7E1;</span><span data-i18n="p_mid"></span></button>
+            <button type="button" data-priority="low" class="pl"
+              data-action="pickSeg" data-arg="priority"><span>&#x1F7E2;</span><span data-i18n="p_low"></span></button>
+          </div>
+          <input type="hidden" id="f-priority" value="mid">
+          <div class="ap-grid">
+            <div class="ap-field">
+              <label class="fld"><span data-i18n="subject"></span></label><input id="f-subject"
+                data-i18n-ph="subject" />
+            </div>
+            <div class="ap-field" style="grid-column:1/-1">
+              <div class="when-preview"><span class="wp-ic">&#x1F4C5;</span><span id="when-preview-txt"></span></div>
+              <div class="when-builder">
+                <label class="fld" data-i18n="date"></label>
+                <div class="day-strip" id="day-strip"></div>
+                <label class="fld" data-i18n="time"></label>
+                <div class="time-picker clock-pick">
+                  <span class="time-emoji" id="time-emoji">&#x1F551;</span>
+                  <div class="clock-dial">
+                    <div class="cp-unit"><button type="button" class="cp-arr"
+                        data-action="bumpTime" data-arg="h" data-arg2="1">&#x25B2;</button>
+                      <div class="cp-num" id="cp-hour">--</div><button type="button" class="cp-arr"
+                        data-action="bumpTime" data-arg="h" data-arg2="-1">&#x25BC;</button>
+                    </div>
+                    <div class="cp-colon">:</div>
+                    <div class="cp-unit"><button type="button" class="cp-arr"
+                        data-action="bumpTime" data-arg="m" data-arg2="5">&#x25B2;</button>
+                      <div class="cp-num" id="cp-min">--</div><button type="button" class="cp-arr"
+                        data-action="bumpTime" data-arg="m" data-arg2="-5">&#x25BC;</button>
+                    </div>
+                  </div>
+                  <div class="chips-mini time-presets"><button type="button" data-action="pickTime" data-arg="08:00">&#x1F305;
+                      <span data-i18n="morning"></span></button><button type="button"
+                      data-action="pickTime" data-arg="12:00">&#x2600;&#xFE0F; <span data-i18n="noon"></span></button><button
+                      type="button" data-action="pickTime" data-arg="16:00">&#x1F324;&#xFE0F; <span
+                        data-i18n="evening"></span></button><button type="button"
+                      data-action="pickTime" data-arg="20:00">&#x1F319; <span data-i18n="night"></span></button><button
+                      type="button" data-action="pickTimeNow">&#x1F551; <span
+                        data-i18n="nowtime"></span></button><button type="button" data-action="clearTime">&#x2715; <span
+                        data-i18n="cleartime"></span></button></div>
+                </div>
+                <input id="f-date" type="date" style="display:none" />
+                <input id="f-time" type="time" style="display:none" />
+              </div>
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld" data-i18n="alert_mode"></label>
+              <select id="f-alert-mode" >
+                <option value="none" data-i18n="alert_none"></option>
+                <option value="at_time" data-i18n="alert_at_time"></option>
+                <option value="5m" data-i18n="alert_5m"></option>
+                <option value="15m" data-i18n="alert_15m"></option>
+                <option value="30m" data-i18n="alert_30m"></option>
+                <option value="1h" data-i18n="alert_1h"></option>
+                <option value="1d" data-i18n="alert_1d"></option>
+                <option value="custom" data-i18n="alert_custom"></option>
+              </select>
+            </div>
+            <div class="ap-field" id="f-alert-custom-fields" style="display: none; grid-column: 1/-1;">
+              <label class="fld" data-i18n="alert_custom_dt"></label>
+              <div style="display: flex; gap: 10px;">
+                <input id="f-alert-date" type="date" style="flex: 1;" />
+                <input id="f-alert-time" type="time" style="flex: 1; direction:ltr;" />
+              </div>
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld" data-i18n="alert_text"></label>
+              <input id="f-alert-text" data-i18n-ph="alert_text_ph" />
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld">&#x1F4DD; <span data-i18n="notes_label"></span></label>
+              <textarea id="f-notes" data-i18n-ph="notes_ph" class="notes-textarea" rows="2"></textarea>
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld">&#x1F501; <span data-i18n="repeat_mode"></span></label>
+              <select id="f-repeat-mode">
+                <option value="none" data-i18n="repeat_none"></option>
+                <option value="weekly" data-i18n="repeat_weekly"></option>
+              </select>
+            </div>
+            <div class="ap-field" id="f-repeat-fields" style="display: none; grid-column: 1/-1;">
+              <label class="fld" data-i18n="repeat_days"></label>
+              <div class="day-strip" id="repeat-day-strip"></div>
+              <label class="fld" data-i18n="repeat_until"></label>
+              <input id="f-repeat-until" type="date" style="flex: 1;" />
+            </div>
+          </div>
+          <button class="btn lg full" id="add-btn" data-action="addTaskFromForm" data-i18n="add"></button>
+          <button class="ghost full" id="cancel-edit-btn" data-action="resetForm" style="display:none;margin-top:8px"
+            data-i18n="cancel_edit"></button>
+        </div>
+        <div id="task-list" class="task-list"></div>
+      </section>
+
+      <section class="view" id="view-week">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x1F5D3;&#xFE0F;</span><span data-i18n="week_title"></span></h1>
+            <p class="muted" data-i18n="week_sub"></p>
+          </div>
+        </header>
+        <div class="week-bar">
+          <button class="ghost sm" data-action="changeWeek" data-arg="-1" data-i18n="prevweek"></button>
+          <button class="ghost sm" data-action="changeWeek" data-arg="0" data-i18n="thisweek"></button>
+          <button class="ghost sm" data-action="changeWeek" data-arg="1" data-i18n="nextweek"></button>
+          <b id="week-range" style="margin-inline-start:auto;color:var(--muted);font-size:13px"></b>
+        </div>
+        <div class="week-grid" id="week-grid"></div>
+        <div class="week-dots" id="week-dots" aria-hidden="true"></div>
+      </section>
+
+      <section class="view" id="view-calendar">
+        <header class="view-head">
+          <div>
+            <h1><span>📅</span><span data-i18n="calendar_title"></span></h1>
+            <p class="muted" data-i18n="calendar_sub"></p>
+          </div>
+          <div class="cal-controls">
+            <div class="cal-toggle">
+              <button id="cal-type-shamsi" class="cal-btn" data-action="setCalendarType" data-arg="shamsi"><span>&#x1F319;</span> <span data-i18n="cal_shamsi"></span></button>
+              <button id="cal-type-miladi" class="cal-btn" data-action="setCalendarType" data-arg="miladi"><span>&#x1F310;</span> <span data-i18n="cal_miladi"></span></button>
+            </div>
+            <div class="cal-toggle">
+              <button id="cal-view-month" class="cal-btn" data-action="setCalendarView" data-arg="month"><span>&#x1F4C5;</span> <span data-i18n="cal_monthly"></span></button>
+              <button id="cal-view-week" class="cal-btn" data-action="setCalendarView" data-arg="week"><span>&#x1F4D8;</span> <span data-i18n="cal_weekly"></span></button>
+            </div>
+          </div>
+        </header>
+
+        <div class="week-bar" style="justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <div style="display: flex; gap: 8px;">
+            <button class="ghost sm" data-action="changeCalendarPeriod" data-arg="-1" data-i18n="prev_period"></button>
+            <button class="ghost sm" data-action="changeCalendarPeriod" data-arg="0" data-i18n="today_period"></button>
+            <button class="ghost sm" data-action="changeCalendarPeriod" data-arg="1" data-i18n="next_period"></button>
+          </div>
+          <b id="calendar-period-title" style="margin: 0; color: var(--txt); font-size: 15px; font-weight: 700;"></b>
+        </div>
+
+        <div id="calendar-grid-container" class="panel" style="padding: 18px; overflow-x: auto;"></div>
+      </section>
+
+      <section class="view" id="view-review">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x1F4CA;</span><span data-i18n="review_title"></span></h1>
+            <p class="muted" data-i18n="review_sub"></p>
+          </div>
+        </header>
+        <div class="rv-grid">
+          <div class="rv-card">
+            <div class="rv-ico">&#x2705;</div><b id="rv-done">0</b><span data-i18n="r_donew"></span>
+          </div>
+          <div class="rv-card">
+            <div class="rv-ico">&#x1F3AF;</div><b id="rv-rate">0%</b><span data-i18n="r_rate"></span>
+          </div>
+          <div class="rv-card">
+            <div class="rv-ico">&#x23F1;&#xFE0F;</div><b id="rv-focus">0</b><span data-i18n="r_focus"></span>
+          </div>
+          <div class="rv-card">
+            <div class="rv-ico">&#x1F345;</div><b id="rv-pomos">0</b><span data-i18n="r_pomos"></span>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F4C8; <span data-i18n="r_perday"></span></h3>
+          <div class="bar-chart" id="rv-bars"></div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F4DA; <span data-i18n="r_persub"></span></h3>
+          <div id="rv-subs"></div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F4C8; <span data-i18n="r_moodprod"></span></h3>
+          <div class="rv-chart-wrap">
+            <svg id="rv-moodprod-svg" class="rv-svg" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="mood productivity correlation"></svg>
+            <div class="rv-chart-note" id="rv-moodprod-note"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F361; <span data-i18n="r_energy"></span></h3>
+          <div class="rv-chart-wrap rv-energy-wrap">
+            <svg id="rv-energy-svg" class="rv-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="energy distribution"></svg>
+            <div class="rv-legend" id="rv-energy-legend"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>📋 <span data-i18n="rv_task_summary"></span></h3>
+          <div class="review-tasks-split">
+            <div class="rv-task-box ok">
+              <h4 style="color: var(--green); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <span>✅</span> <span data-i18n="rv_completed_tasks"></span> (<span id="rv-completed-count">0</span>)
+              </h4>
+              <div id="rv-completed-list"
+                style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-inline-end: 4px;">
+              </div>
+            </div>
+            <div class="rv-task-box no">
+              <h4 style="color: var(--red); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <span>❌</span> <span data-i18n="rv_failed_tasks"></span> (<span id="rv-failed-count">0</span>)
+              </h4>
+              <div id="rv-failed-list"
+                style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-inline-end: 4px;">
+              </div>
+            </div>
+            <div class="rv-task-box overdue">
+              <h4 style="color: var(--yellow); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <span>⚠️</span> <span data-i18n="rv_overdue_tasks"></span> (<span id="rv-overdue-count">0</span>)
+              </h4>
+              <div id="rv-overdue-list"
+                style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-inline-end: 4px;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="rv-motivate" id="rv-motivate"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-exams">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x1F4DD;</span><span data-i18n="exams_title"></span></h1>
+            <p class="muted" data-i18n="exams_sub"></p>
+          </div>
+        </header>
+        <div id="exam-summary"></div>
+        <div class="panel add-panel exam-add">
+          <div class="exam-add-head">
+            <div class="eah-ic" id="exam-h-ico">&#x1F4DD;</div>
+            <div class="eah-tx">
+              <h3 id="exam-h-txt" data-i18n="addexam"></h3><small class="muted" data-i18n="exam_addhint"></small>
+            </div>
+          </div>
+          <input id="e-title" class="ap-title" data-i18n-ph="exam_titleph"  />
+          <div class="ap-grid">
+            <div class="ap-field" style="grid-column:1/-1"><label class="fld">&#x1F4DA; <span
+                  data-i18n="subject"></span></label><input id="e-subject" data-i18n-ph="subject" /></div>
+            <div class="ap-field" style="grid-column:1/-1"><label class="fld">&#x1F4C5; <span
+                  data-i18n="date"></span></label>
+              <div class="day-strip exam-daystrip" id="exam-daystrip"></div>
+              <input id="e-date" type="date"  />
+            </div>
+            <div class="ap-field" style="grid-column:1/-1"><label class="fld">&#x23F0; <span
+                  data-i18n="time"></span></label>
+              <div class="time-picker exam-clock">
+                <div class="ec-main"><span class="time-emoji" id="e-time-emoji">&#x1F551;</span>
+                  <div class="clock-dial">
+                    <div class="cp-unit"><button type="button" class="cp-arr"
+                        data-action="bumpExamTime" data-arg="h" data-arg2="1">&#x25B2;</button>
+                      <div class="cp-num" id="ecp-hour">--</div><button type="button" class="cp-arr"
+                        data-action="bumpExamTime" data-arg="h" data-arg2="-1">&#x25BC;</button>
+                    </div>
+                    <div class="cp-colon">:</div>
+                    <div class="cp-unit"><button type="button" class="cp-arr"
+                        data-action="bumpExamTime" data-arg="m" data-arg2="5">&#x25B2;</button>
+                      <div class="cp-num" id="ecp-min">--</div><button type="button" class="cp-arr"
+                        data-action="bumpExamTime" data-arg="m" data-arg2="-5">&#x25BC;</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="chips-mini time-presets"><button type="button"
+                    data-action="pickExamTime" data-arg="08:00">&#x1F305; <span data-i18n="morning"></span></button><button
+                    type="button" data-action="pickExamTime" data-arg="10:00">&#x1F9ED; 10:00</button><button type="button"
+                    data-action="pickExamTime" data-arg="14:00">&#x2600;&#xFE0F; <span data-i18n="noon"></span></button><button
+                    type="button" data-action="pickExamTime" data-arg="16:00">&#x1F324;&#xFE0F; <span
+                      data-i18n="evening"></span></button><button type="button" data-action="clearExamTime">&#x2715; <span
+                      data-i18n="cleartime"></span></button></div>
+              </div>
+              <input id="e-time" type="time" style="display:none"  />
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld" data-i18n="alert_mode"></label>
+              <select id="e-alert-mode" >
+                <option value="none" data-i18n="alert_none"></option>
+                <option value="at_time" data-i18n="alert_at_time"></option>
+                <option value="15m" data-i18n="alert_15m"></option>
+                <option value="30m" data-i18n="alert_30m"></option>
+                <option value="1h" data-i18n="alert_1h"></option>
+                <option value="1d" data-i18n="alert_1d"></option>
+                <option value="1w" data-i18n="alert_1w"></option>
+                <option value="custom" data-i18n="alert_custom"></option>
+              </select>
+            </div>
+            <div class="ap-field" id="e-alert-custom-fields" style="display: none; grid-column: 1/-1;">
+              <label class="fld" data-i18n="alert_custom_dt"></label>
+              <div style="display: flex; gap: 10px;">
+                <input id="e-alert-date" type="date" style="flex: 1;" />
+                <input id="e-alert-time" type="time" style="flex: 1; direction:ltr;" />
+              </div>
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld" data-i18n="alert_text"></label>
+              <input id="e-alert-text" data-i18n-ph="alert_text_ph" />
+            </div>
+            <div class="ap-field" style="grid-column: 1/-1;">
+              <label class="fld">&#x1F4DD; <span data-i18n="notes_label"></span></label>
+              <textarea id="e-notes" data-i18n-ph="notes_ph" class="notes-textarea" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="exam-preview" id="exam-preview"></div><button class="btn lg full exam-add-btn" id="exam-btn"
+            data-action="addExamFromForm" data-i18n="addexam"></button>
+        </div>
+        <div id="exam-list" class="exam-list"></div>
+      </section>
+
+      <section class="view" id="view-focus">
+        <!-- cosmic particle field behind the whole view -->
+        <div class="focus-aurora" aria-hidden="true">
+          <div class="focus-aurora-blob a1"></div>
+          <div class="focus-aurora-blob a2"></div>
+          <div class="focus-aurora-blob a3"></div>
+        </div>
+        <div class="focus-stars" id="focus-stars" aria-hidden="true"></div>
+
+        <header class="view-head focus-head">
+          <div>
+            <h1><span>&#x1F3AF;</span><span data-i18n="focus_title"></span></h1>
+            <p class="muted" data-i18n="focus_sub"></p>
+          </div><button class="fs-btn" data-action="enterFS">&#x26F6; <span data-i18n="fs_enter"></span></button>
+        </header>
+
+        <!-- Pomodoro cycle dots (4 work + long break) -->
+        <div class="cycle-track" id="cycle-track" aria-hidden="true">
+          <span class="cycle-dot"></span>
+          <span class="cycle-dot"></span>
+          <span class="cycle-dot"></span>
+          <span class="cycle-dot"></span>
+          <span class="cycle-sep"></span>
+          <span class="cycle-dot cycle-long"></span>
+        </div>
+
+        <div class="focus-wrap">
+          <!-- LEFT column: controls -->
+          <div class="focus-left">
+            <div class="focus-on">
+              <label data-i18n="focus_on"></label>
+              <select id="focus-task"></select>
+              <button class="ghost sm" data-action="completeFocusTask" data-i18n="complete_task"></button>
+            </div>
+            <div class="mode-tabs">
+              <button data-min="25" class="active" data-action="setMode" data-arg="25" data-arg2="mode_focus" data-i18n="tab_focus"></button>
+              <button data-min="5" data-action="setMode" data-arg="5" data-arg2="mode_short" data-i18n="tab_short"></button>
+              <button data-min="15" data-action="setMode" data-arg="15" data-arg2="mode_long" data-i18n="tab_long"></button>
+              <button data-min="custom" id="mode-custom-btn" data-action="openCustomMode" data-i18n="tab_custom"></button>
+              <div class="custom-time" id="custom-time">
+                <div class="ct-head"><span class="ct-emoji">&#x2699;&#xFE0F;</span>
+                  <div class="ct-display"><span id="custom-min-num">45</span><small data-i18n="minutes_unit"></small></div>
+                </div>
+                <input type="range" class="ct-slider" id="custom-min" min="5" max="120" step="5" value="45" />
+                <div class="chips-mini ct-presets"><button type="button" data-action="setCustomPreset" data-arg="15">15</button><button
+                    type="button" data-action="setCustomPreset" data-arg="30">30</button><button type="button"
+                    data-action="setCustomPreset" data-arg="45">45</button><button type="button"
+                    data-action="setCustomPreset" data-arg="60">60</button><button type="button"
+                    data-action="setCustomPreset" data-arg="90">90</button></div>
+                <p class="ct-hint" data-i18n="customtime_hint"></p>
+              </div>
+            </div>
+
+            <div class="timer-acts">
+              <button class="btn lg focus-play" id="startBtn" data-action="toggleTimer"></button>
+              <button class="ghost lg" data-action="resetTimer" id="resetBtn"></button>
+            </div>
+
+            <div class="focus-stats">
+              <div class="fs-item glass-chip"><span class="fs-ico">&#x1F34B;</span><div><b id="pomos">0</b><span data-i18n="pomos_lbl"></span></div></div>
+              <div class="fs-item glass-chip"><span class="fs-ico">&#x23F1;&#xFE0F;</span><div><b id="focus-min">0</b><span data-i18n="focusmin_lbl"></span></div></div>
+              <div class="fs-item fs-streak glass-chip"><span class="fs-ico">&#x1F525;</span><div><b id="focus-streak">0</b><span data-i18n="streak_lbl"></span></div></div>
+            </div>
+          </div>
+
+          <!-- RIGHT column: the cosmic glass orb -->
+          <div class="focus-right">
+            <div class="orb-stage" id="orb-stage">
+              <div class="orb" id="orb">
+                <div class="orb-halo"></div>
+                <div class="orb-glow"></div>
+                <div class="orb-aura"></div>
+                <div class="orb-pulse"></div>
+                <div class="orb-orbit"><span class="orb-sat"></span></div>
+                <div class="orb-orbit orb-orbit-2"><span class="orb-sat orb-sat-2"></span></div>
+                <svg class="orb-ring" viewBox="0 0 200 200">
+                  <defs>
+                    <linearGradient id="orbGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="var(--accent)" />
+                      <stop offset="0.5" stop-color="var(--accent2)" />
+                      <stop offset="1" stop-color="var(--green)" />
+                    </linearGradient>
+                    <filter id="orbBlur"><feGaussianBlur stdDeviation="0.6" /></filter>
+                  </defs>
+                  <circle class="ring-bg2" cx="100" cy="100" r="90" />
+                  <circle class="ring-ticks" cx="100" cy="100" r="84" />
+                  <circle class="ring-fg2" id="ring-fg" cx="100" cy="100" r="90" filter="url(#orbBlur)" />
+                </svg>
+                <div class="orb-core">
+                  <div class="clock" id="clock">25:00</div>
+                  <div class="mode-label" id="mode-label"></div>
+                  <div class="focus-sub" id="focus-sub"></div>
+                </div>
+                <!-- glassy specular highlight (top-left light reflection) -->
+                <div class="orb-glass-spec"></div>
+                <!-- frost rim ring -->
+                <div class="orb-rim"></div>
+                <div class="orb-burst" id="orb-burst"></div>
+              </div>
+              <div class="phase-name" id="phase-name"></div>
+            </div>
+          </div>
+
+          <!-- FULL WIDTH: ambience (glass panel) -->
+          <div class="ambience glass-panel">
+            <div class="glass-sheen"></div>
+            <div class="amb-head">
+              <div class="amb-title">&#x1F3A7; <span data-i18n="amb_title"></span></div>
+              <button class="amb-stop" id="amb-stop" data-action="stopAmbience" style="display:none" data-i18n="amb_stop"></button>
+            </div>
+            <div class="amb-grid">
+              <button class="amb-btn" data-amb="rain" data-action="toggleAmbience" data-arg="rain">&#x1F327;&#xFE0F;<span data-i18n="amb_rain"></span></button>
+              <button class="amb-btn" data-amb="waves" data-action="toggleAmbience" data-arg="waves">&#x1F30A;<span data-i18n="amb_waves"></span></button>
+              <button class="amb-btn" data-amb="forest" data-action="toggleAmbience" data-arg="forest">&#x1F343;<span data-i18n="amb_forest"></span></button>
+              <button class="amb-btn" data-amb="white" data-action="toggleAmbience" data-arg="white">&#x26AA;<span data-i18n="amb_white"></span></button>
+              <button class="amb-btn" data-amb="night" data-action="toggleAmbience" data-arg="night">&#x1F319;<span data-i18n="amb_night"></span></button>
+              <button class="amb-btn" data-amb="cafe" data-action="toggleAmbience" data-arg="cafe">&#x2615;<span data-i18n="amb_cafe"></span></button>
+              <button class="amb-btn" data-amb="fireplace" data-action="toggleAmbience" data-arg="fireplace">&#x1F525;<span data-i18n="amb_fireplace"></span></button>
+              <button class="amb-btn" data-amb="wind" data-action="toggleAmbience" data-arg="wind">&#x1F32C;&#xFE0F;<span data-i18n="amb_wind"></span></button>
+              <button class="amb-btn" data-amb="stream" data-action="toggleAmbience" data-arg="stream">&#x1FAE7;<span data-i18n="amb_stream"></span></button>
+              <button class="amb-btn" data-amb="brown" data-action="toggleAmbience" data-arg="brown">&#x1F3B5;<span data-i18n="amb_brown"></span></button>
+            </div>
+            <div class="amb-viz">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="amb-vol" id="amb-vol-wrap">
+              <span class="amb-vol-ico" id="amb-vol-ico">&#x1F509;</span>
+              <div class="amb-vol-track">
+                <input type="range" id="amb-vol" min="0" max="100" value="50" aria-label="ambience volume" />
+                <div class="amb-vol-fill" id="amb-vol-fill"></div>
+              </div>
+              <span id="amb-vol-num">50%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-srs">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x1F9E0;</span><span data-i18n="srs_title"></span></h1>
+            <p class="muted" data-i18n="srs_sub"></p>
+          </div>
+          <div class="chips">
+            <div class="chip"><b id="srs-total">0</b> <span data-i18n="srs_total_cards"></span></div>
+            <div class="chip no"><b id="srs-due">0</b> <span data-i18n="srs_due_cards"></span></div>
+          </div>
+        </header>
+        <div class="panel add-panel">
+          <h3><span>&#x2795;</span> <span data-i18n="srs_addcard"></span></h3>
+          <input id="srs-title" class="ap-title" data-i18n-ph="srs_title_ph" />
+          <div class="ap-field" style="grid-column:1/-1">
+            <label class="fld">&#x1F4DA; <span data-i18n="subject"></span></label>
+            <input id="srs-subject" data-i18n-ph="subject" />
+          </div>
+          <div class="ap-field" style="grid-column:1/-1">
+            <label class="fld">&#x1F4DD; <span data-i18n="notes_label"></span></label>
+            <textarea id="srs-back" class="notes-textarea" rows="2" data-i18n-ph="notes_ph"></textarea>
+          </div>
+          <button class="btn lg full" data-action="addSrsCard" data-i18n="srs_addcard"></button>
+        </div>
+
+        <div class="panel srs-review-panel" id="srs-review-panel" style="display:none">
+          <h3>&#x1F501; <span data-i18n="srs_due_now"></span></h3>
+          <div class="srs-card-stage" id="srs-stage"></div>
+          <div class="srs-grade" id="srs-grade" style="display:none">
+            <button class="srs-gq again" data-action="gradeSrs" data-arg="0"><span>&#x1F504;</span><span data-i18n="srs_q_again"></span></button>
+            <button class="srs-gq good" data-action="gradeSrs" data-arg="1"><span>&#x1F44D;</span><span data-i18n="srs_q_good"></span></button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>&#x1F9E0; <span data-i18n="srs_total_cards"></span></h3>
+          <div id="srs-list"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-ai">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x1F916;</span><span data-i18n="ai_title"></span></h1>
+            <p class="muted" data-i18n="ai_sub"></p>
+          </div>
+        </header>
+        <div class="ai-shell">
+          <aside class="chat-history">
+            <button class="newchat-btn" data-action="newChat" data-arg="true">&#x2795; <span data-i18n="ai_newchat"></span></button>
+            <div class="chist-list" id="chist-list"></div>
+            <button class="chist-clear" data-action="clearAllChats" data-i18n="ai_clearchats"></button>
+          </aside>
+          <div class="chat-main">
+            <div class="chat-wrap">
+              <div class="chat-aurora"></div>
+              <div class="chat" id="chat"></div>
+            </div>
+            <div id="img-preview" class="img-preview" style="display:none">
+              <img id="img-preview-img" src="" alt="preview" />
+              <span class="img-preview-name" id="img-preview-name"></span>
+              <button class="img-remove" data-action="removeImageUpload" title="Remove">&#x2715;</button>
+            </div>
+            <div class="ai-input-bar"><button class="img-upload-btn" id="img-upload-btn" data-action="triggerImageUpload" title="Attach image">&#x1F4CE;</button><textarea id="ai-input" rows="1" data-i18n-ph="ai_inputph"
+                
+                ></textarea><button class="btn ai-sendbtn" id="ai-send-btn" data-action="askAI"
+                data-i18n="ai_send"></button></div>
+            <input type="file" id="ai-image-input" accept="image/*" style="display:none" />
+            <p class="hint" id="ai-status"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <header class="view-head">
+          <div>
+            <h1><span>&#x2699;&#xFE0F;</span><span data-i18n="settings_title"></span></h1>
+            <p class="muted" data-i18n="settings_sub"></p>
+          </div>
+        </header>
+        <div class="panel">
+          <h3>&#x1F464; <span data-i18n="profile"></span></h3>
+          <div class="profile-hero">
+            <div class="avatar-ring">
+              <div class="ar-inner" id="avatar-big">?</div>
+            </div>
+            <div>
+              <div class="profile-name" id="pp-name"></div>
+              <div class="profile-uni" id="pp-uni"></div>
+            </div>
+          </div>
+          <div class="ap-grid" style="margin-top:0">
+            <div class="ap-field"><label class="fld" data-i18n="name"></label><input id="p-name" data-i18n-ph="name" />
+            </div>
+            <div class="ap-field"><label class="fld" data-i18n="university"></label><input id="p-uni"
+                data-i18n-ph="university" /></div>
+          </div>
+          <button class="btn full" data-action="saveProfile" data-i18n="save"></button>
+        </div>
+        <div class="panel">
+          <h3>&#x1F310; <span data-i18n="s_lang"></span></h3>
+          <div class="lang-toggle"><button id="lang-fa" data-action="setLang" data-arg="fa">فارسی</button><button id="lang-en"
+              data-action="setLang" data-arg="en">English</button></div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F3A8; <span data-i18n="s_theme"></span></h3>
+          <div class="theme-grid">
+            <button class="theme-card" data-action="setTheme" data-arg="dark"><span class="sw sw-dark"></span><span
+                data-i18n="theme_dark"></span></button>
+            <button class="theme-card" data-action="setTheme" data-arg="forest"><span class="sw sw-forest"></span><span
+                data-i18n="theme_forest"></span></button>
+            <button class="theme-card" data-action="setTheme" data-arg="hybrid"><span class="sw sw-hybrid"></span><span
+                data-i18n="theme_hybrid"></span></button>
+            <button class="theme-card" data-action="setTheme" data-arg="light"><span class="sw sw-light"></span><span
+                data-i18n="theme_light"></span></button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F514; <span data-i18n="s_sound"></span></h3>
+          <div class="seg" id="snd-seg"><button id="snd-on" data-action="setSound" data-arg="true" data-i18n="on"></button><button
+              id="snd-off" data-action="setSound" data-arg="false" data-i18n="off"></button></div>
+        </div>
+        <div class="panel">
+          <h3>🔔 <span data-i18n="settings_notif"></span></h3>
+          <div class="seg" id="notif-seg">
+            <button id="notif-on" data-action="setNotificationEnabled" data-arg="true" data-i18n="on"></button>
+            <button id="notif-off" data-action="setNotificationEnabled" data-arg="false" data-i18n="off"></button>
+          </div>
+          <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button class="ghost" id="notif-test-btn" data-action="testBrowserNotification">🔔 <span
+                data-i18n="notif_test"></span></button>
+            <span id="notif-test-status" class="muted" style="font-size: 12px; margin-inline-start: 10px;"></span>
+          </div>
+        </div>
+        <div class="panel settings-notif-panel">
+          <h3>&#x1F514; <span data-i18n="notif_title"></span></h3>
+          <div class="notif-header">
+            <h4 id="settings-notif-count"></h4>
+            <button class="ghost sm" data-action="clearAllNotifications" data-i18n="notif_clear"></button>
+          </div>
+          <div id="settings-notif-list" class="notif-list"></div>
+        </div>
+        <div class="panel">
+          <h3>&#x1F916; <span data-i18n="s_api"></span></h3>
+          <label class="fld" data-i18n="provider"></label>
+          <div class="prov-grid" id="prov-grid"></div>
+          <div class="ap-grid" style="margin-top:0">
+            <div class="ap-field" style="grid-column:1/-1"><label class="fld" data-i18n="base_url"></label><input
+                id="api-url" placeholder="https://api.openai.com/v1"  /></div>
+            <div class="ap-field"><label class="fld" data-i18n="api_key"></label><input id="api-key" type="password"
+                placeholder="sk-..." /></div>
+            <div class="ap-field"><label class="fld" data-i18n="model"></label><input id="api-model"
+                placeholder="gpt-4o-mini" /></div>
+            <div class="ap-field" style="grid-column:1/-1; margin-top:8px;">
+              <label class="fld">&#x1F5BC;&#xFE0F; <span data-i18n="vision_support"></span></label>
+              <div class="seg" id="vision-seg">
+                <button id="vision-on" data-action="setVision" data-arg="true">&#x2705; <span data-i18n="on"></span></button>
+                <button id="vision-off" data-action="setVision" data-arg="false">&#x274C; <span data-i18n="off"></span></button>
+              </div>
+              <p class="hint" data-i18n="vision_hint"></p>
+            </div>
+          </div>
+          <div class="test-row"><button class="btn full" style="flex:1" data-action="saveSettings"
+              data-i18n="save"></button><button class="ghost" data-action="testApiConnection" id="test-btn">&#x1F50C;
+              <span data-i18n="test_conn"></span></button></div>
+          <div class="test-result" id="api-test-result"></div>
+          <p class="hint" data-i18n="api_hint"></p>
+        </div>
+        <div class="panel">
+          <h3>&#x2601;&#xFE0F; <span data-i18n="sync_settings_title"></span></h3>
+          <p class="muted" style="font-size:12px;margin-top:0" data-i18n="sync_settings_sub"></p>
+          <div class="sync-status-row" id="sync-status-row">
+            <span class="sync-state-dot" id="sync-state-dot"></span>
+            <span id="sync-state-text"></span>
+            <button class="ghost sm" id="sync-hub-btn" data-action="openSyncHub" data-i18n="sync_open_hub"></button>
+          </div>
+          <div class="ap-grid" style="margin-top:8px">
+            <div class="ap-field" style="grid-column:1/-1"><label class="fld" data-i18n="sync_sb_url"></label><input id="sb-url" placeholder="https://xxxx.supabase.co" /></div>
+            <div class="ap-field" style="grid-column:1/-1"><label class="fld" data-i18n="sync_sb_key"></label><input id="sb-key" type="password" placeholder="eyJhbGci..." /></div>
+          </div>
+          <div class="test-row"><button class="btn full" style="flex:1" data-action="saveSyncConfig" data-i18n="save"></button><button class="ghost" data-action="testSyncConnection" id="sync-test-btn">&#x1F50C; <span data-i18n="test_conn"></span></button></div>
+          <div class="test-result" id="sync-test-result"></div>
+          <p class="hint" data-i18n="sync_setup_hint"></p>
+          <button class="ghost full sm" id="sync-setup-guide-btn" data-action="openSyncGuide" style="margin-top:4px">&#x1F4A1; <span data-i18n="sync_setup_guide_btn"></span></button>
+        </div>
+        <div class="panel">
+          <h3>&#x1F5C3;&#xFE0F; <span data-i18n="s_data"></span></h3>
+          <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ghost" data-action="exportData"
+              data-i18n="export"></button><button class="ghost" data-action="importClick"
+              data-i18n="import"></button><button class="ghost danger" data-action="clearData"
+              data-i18n="clearall"></button></div><input id="import-file" type="file" accept="application/json,.json"
+            class="hidden"  />
+          <div class="muted" style="margin-top:8px;font-size:12px" data-i18n="import_hint"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="focus-fs" id="focus-fs">
+    <div class="focus-fs-bg"></div>
+    <div class="focus-fs-aurora" id="fs-aurora"></div>
+    <div class="focus-fs-stars" id="fs-stars"></div>
+    <div class="focus-fs-content">
+      <div class="fs-phase-pill" id="fs-phase-pill"></div>
+      <div class="fs-task-txt" id="fs-task-txt"></div>
+      <div class="orb orb-fs" id="fs-orb">
+        <div class="orb-halo"></div>
+        <div class="orb-glow"></div>
+        <div class="orb-aura"></div>
+        <div class="orb-pulse"></div>
+        <div class="orb-orbit"><span class="orb-sat"></span></div>
+        <div class="orb-orbit orb-orbit-2"><span class="orb-sat orb-sat-2"></span></div>
+        <svg class="orb-ring" viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="orbGradFs" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="var(--accent)" />
+              <stop offset="0.5" stop-color="var(--accent2)" />
+              <stop offset="1" stop-color="var(--green)" />
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg2" cx="100" cy="100" r="90" />
+          <circle class="ring-ticks" cx="100" cy="100" r="84" />
+          <circle class="ring-fg2" id="fs-ring-fg" cx="100" cy="100" r="90" />
+        </svg>
+        <div class="orb-core">
+          <div class="clock" id="fs-clock">25:00</div>
+          <div class="mode-label" id="fs-mode-label"></div>
+        </div>
+        <div class="orb-glass-spec"></div>
+        <div class="orb-rim"></div>
+        <div class="orb-burst" id="fs-orb-burst"></div>
+      </div>
+      <div class="fs-cycle-track" id="fs-cycle-track" aria-hidden="true">
+        <span class="cycle-dot"></span>
+        <span class="cycle-dot"></span>
+        <span class="cycle-dot"></span>
+        <span class="cycle-dot"></span>
+        <span class="cycle-sep"></span>
+        <span class="cycle-dot cycle-long"></span>
+      </div>
+      <div class="fs-acts">
+        <button class="btn lg focus-play" id="fs-start-btn" data-action="toggleTimer"></button>
+        <button class="ghost lg" id="fs-reset-btn" data-action="resetTimer"></button>
+      </div>
+      <div class="fs-amb-mini" id="fs-amb-mini"></div>
+    </div>
+    <button class="fs-exit-btn" data-action="exitFS">&#x2715; <span data-i18n="fs_exit"></span></button>
+  </div>
+
+  <div class="modal-overlay" id="task-modal" data-action="overlayCloseTaskModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3><span class="mh-ic">&#x270F;&#xFE0F;</span> <span data-i18n="tm_title"></span></h3><button class="modal-x"
+          data-action="closeTaskModal">&#x2715;</button>
+      </div>
+      <input id="m-title" class="ap-title" data-i18n-ph="title_ph"  />
+      <div class="seg" id="m-type-seg">
+        <button type="button" data-val="study" data-action="pickModalSeg" data-arg="type"><span>&#x1F4D6;</span><span
+            data-i18n="type_study"></span></button>
+        <button type="button" data-val="practice" data-action="pickModalSeg" data-arg="type"><span>&#x270F;&#xFE0F;</span><span
+            data-i18n="type_practice"></span></button>
+        <button type="button" data-val="review" data-action="pickModalSeg" data-arg="type"><span>&#x1F501;</span><span
+            data-i18n="type_review"></span></button>
+        <button type="button" data-val="assignment" data-action="pickModalSeg" data-arg="type"><span>&#x1F4CC;</span><span
+            data-i18n="type_assignment"></span></button>
+      </div>
+      <input type="hidden" id="m-type" />
+      <div class="seg prio" id="m-priority-seg">
+        <button type="button" data-val="high" class="ph"
+          data-action="pickModalSeg" data-arg="priority"><span>&#x1F534;</span><span data-i18n="p_high"></span></button>
+        <button type="button" data-val="mid" class="pm"
+          data-action="pickModalSeg" data-arg="priority"><span>&#x1F7E1;</span><span data-i18n="p_mid"></span></button>
+        <button type="button" data-val="low" class="pl"
+          data-action="pickModalSeg" data-arg="priority"><span>&#x1F7E2;</span><span data-i18n="p_low"></span></button>
+      </div>
+      <input type="hidden" id="m-priority" />
+      <div class="ap-grid">
+        <div class="ap-field"><label class="fld" data-i18n="subject"></label><input id="m-subject"
+            data-i18n-ph="subject" /></div>
+        <div class="ap-field"><label class="fld" data-i18n="date"></label><input id="m-date" type="date" /></div>
+        <div class="ap-field"><label class="fld" data-i18n="time"></label><input id="m-time" type="time"
+            style="direction:ltr" /></div>
+        <div class="ap-field"><label class="fld" data-i18n="tm_status"></label>
+          <div class="seg" id="m-status-seg">
+            <button type="button" data-val="todo" data-action="pickModalSeg" data-arg="status"><span>&#x23F3;</span><span
+                data-i18n="st_todo"></span></button>
+            <button type="button" data-val="done" data-action="pickModalSeg" data-arg="status"><span>&#x2705;</span><span
+                data-i18n="st_done"></span></button>
+            <button type="button" data-val="fail" data-action="pickModalSeg" data-arg="status"><span>&#x26D4;</span><span
+                data-i18n="st_fail"></span></button>
+          </div>
+        </div>
+        <input type="hidden" id="m-status" />
+        <div class="ap-field" style="grid-column: 1/-1;">
+          <label class="fld" data-i18n="alert_mode"></label>
+          <select id="m-alert-mode" >
+            <option value="none" data-i18n="alert_none"></option>
+            <option value="at_time" data-i18n="alert_at_time"></option>
+            <option value="5m" data-i18n="alert_5m"></option>
+            <option value="15m" data-i18n="alert_15m"></option>
+            <option value="30m" data-i18n="alert_30m"></option>
+            <option value="1h" data-i18n="alert_1h"></option>
+            <option value="1d" data-i18n="alert_1d"></option>
+            <option value="custom" data-i18n="alert_custom"></option>
+          </select>
+        </div>
+        <div class="ap-field" id="m-alert-custom-fields" style="display: none; grid-column: 1/-1;">
+          <label class="fld" data-i18n="alert_custom_dt"></label>
+          <div style="display: flex; gap: 10px;">
+            <input id="m-alert-date" type="date" style="flex: 1;" />
+            <input id="m-alert-time" type="time" style="flex: 1; direction:ltr;" />
+          </div>
+        </div>
+        <div class="ap-field" style="grid-column: 1/-1;">
+          <label class="fld" data-i18n="alert_text"></label>
+          <input id="m-alert-text" data-i18n-ph="alert_text_ph" />
+        </div>
+        <div class="ap-field" style="grid-column: 1/-1;">
+          <label class="fld">&#x1F4DD; <span data-i18n="notes_label"></span></label>
+          <textarea id="m-notes" data-i18n-ph="notes_ph" class="notes-textarea" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-acts">
+        <button class="btn lg" data-action="saveTaskModal" data-i18n="save"></button>
+        <button class="ghost lg danger" data-action="deleteTaskModal" data-i18n="tm_delete"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="day-tasks-modal" data-action="overlayCloseDayTasks">
+    <div class="modal-card" style="max-width:480px">
+      <div class="modal-head">
+        <h3><span class="mh-ic">&#x1F4C5;</span> <span id="day-tasks-title"></span></h3>
+        <button class="modal-x" data-action="closeDayTasksModal">&#x2715;</button>
+      </div>
+      <div id="day-tasks-body" style="max-height:60vh; overflow-y:auto"></div>
+      <div class="modal-acts">
+        <button class="btn lg" data-action="closeDayTasksModal" data-i18n="save"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="internal-alert-banner">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <b id="internal-alert-title" style="font-size: 14px; display: flex; align-items: center; gap: 8px;">🔔
+        <span>یادآوری</span></b>
+      <button data-action="closeInternalAlert"
+        style="background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 14px;">✕</button>
+    </div>
+    <div id="internal-alert-body" style="font-size: 13px; color: var(--txt); line-height: 1.5; white-space: pre-wrap;">
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- ===== Cloud Sync: Auth Modal ===== -->
+  <div class="modal-overlay" id="auth-modal" data-action="overlayCloseAuth">
+    <div class="modal-card auth-card">
+      <div class="auth-bg-blobs" aria-hidden="true">
+        <span class="abb b1"></span><span class="abb b2"></span><span class="abb b3"></span>
+      </div>
+      <button class="modal-x" data-action="closeAuth" aria-label="close" style="position:absolute !important;top:14px !important;right:14px !important;left:auto !important;margin:0 !important;transform:none !important;z-index:6 !important">&#x2715;</button>
+      <div class="auth-logo">
+        <span class="al-cloud">&#x2601;&#xFE0F;</span>
+      </div>
+      <h2 class="auth-title" data-i18n="sync_title"></h2>
+      <p class="auth-sub" data-i18n="sync_subtitle"></p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="signin" data-action="authTab" data-arg="signin" data-i18n="sync_tab_signin"></button>
+        <button class="auth-tab" data-tab="signup" data-action="authTab" data-arg="signup" data-i18n="sync_tab_signup"></button>
+        <button class="auth-tab" data-tab="pair" data-action="authTab" data-arg="pair" data-i18n="sync_tab_pair"></button>
+      </div>
+
+      <!-- Sign in pane -->
+      <div class="auth-pane" data-pane="signin">
+        <input id="auth-email" type="email" data-i18n-ph="sync_email_ph" />
+        <input id="auth-pass" type="password" data-i18n-ph="sync_pass_ph" />
+        <button class="btn lg full" data-action="doSignIn" data-i18n="sync_signin_btn"></button>
+        <button class="ghost full sm" data-action="doResetPass" data-i18n="sync_reset_pass"></button>
+        <div class="auth-result" id="signin-result"></div>
+      </div>
+
+      <!-- Sign up pane -->
+      <div class="auth-pane" data-pane="signup" style="display:none">
+        <input id="signup-email" type="email" data-i18n-ph="sync_email_ph" autocomplete="email" />
+        <input id="signup-pass" type="password" data-i18n-ph="sync_pass_ph" autocomplete="new-password" />
+        <div class="pw-meter" id="pw-meter" aria-hidden="true">
+          <div class="pw-meter-bar"></div>
+          <span class="pw-meter-label"></span>
+        </div>
+        <button class="btn lg full" data-action="doSignUp" data-i18n="sync_signup_btn"></button>
+        <p class="hint" data-i18n="sync_signup_hint"></p>
+        <div class="auth-result" id="signup-result"></div>
+      </div>
+
+      <!-- Pair pane -->
+      <div class="auth-pane" data-pane="pair" style="display:none">
+        <p class="muted small" data-i18n="sync_pair_explain"></p>
+        <input id="pair-email" type="email" data-i18n-ph="sync_email_ph" autocomplete="email" />
+        <div class="otp-row" id="otp-row" aria-label="pairing code">
+          <input class="otp-box" maxlength="1" inputmode="numeric" data-idx="0" autocomplete="one-time-code" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" data-idx="1" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" data-idx="2" />
+          <span class="otp-sep"></span>
+          <input class="otp-box" maxlength="1" inputmode="numeric" data-idx="3" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" data-idx="4" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" data-idx="5" />
+        </div>
+        <input type="hidden" id="pair-code" />
+        <button class="btn lg full" data-action="doPair" data-i18n="sync_pair_btn"></button>
+        <div class="auth-result" id="pair-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Cloud Sync: Hub ===== -->
+  <div class="modal-overlay sync-hub-overlay" id="sync-hub" data-action="overlayCloseHub">
+    <div class="modal-card sync-hub-card">
+      <button class="modal-x" data-action="closeHub" aria-label="close" style="position:absolute !important;top:14px !important;right:14px !important;left:auto !important;margin:0 !important;transform:none !important;z-index:6 !important">&#x2715;</button>
+      <div class="sync-hub-head">
+        <span class="shh-ico">&#x2601;&#xFE0F;</span>
+        <div>
+          <h2 data-i18n="sync_hub_title"></h2>
+          <p class="muted small" data-i18n="sync_hub_sub"></p>
+        </div>
+      </div>
+      <div id="sync-hub-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== Cloud Sync: Setup Guide Modal ===== -->
+  <div class="modal-overlay" id="sync-guide-modal" data-action="overlayCloseSyncGuide">
+    <div class="modal-card sync-guide-card">
+      <button class="modal-x" data-action="closeSyncGuide" aria-label="close" style="position:absolute !important;top:14px !important;right:14px !important;left:auto !important;margin:0 !important;transform:none !important;z-index:6 !important">&#x2715;</button>
+      <div class="modal-head">
+        <h3><span class="mh-ico">&#x2601;&#xFE0F;</span> <span data-i18n="sync_guide_title"></span></h3>
+      </div>
+      <ol class="sync-guide-steps">
+        <li><b data-i18n="sync_guide_s1_h"></b><span data-i18n="sync_guide_s1"></span></li>
+        <li><b data-i18n="sync_guide_s2_h"></b><span data-i18n="sync_guide_s2"></span></li>
+        <li><b data-i18n="sync_guide_s3_h"></b><span data-i18n="sync_guide_s3"></span></li>
+        <li><b data-i18n="sync_guide_s4_h"></b><span data-i18n="sync_guide_s4"></span></li>
+        <li><b data-i18n="sync_guide_s5_h"></b><span data-i18n="sync_guide_s5"></span></li>
+      </ol>
+      <div class="sync-guide-sql-wrap">
+        <div class="sync-guide-sql-head">
+          <span data-i18n="sync_guide_sql_title"></span>
+          <button class="ghost sm" data-action="copySyncSql" id="copy-sql-btn">&#x1F4CB;</button>
+        </div>
+        <pre class="sync-guide-sql" id="sync-guide-sql"></pre>
+      </div>
+      <p class="hint" data-i18n="sync_guide_foot"></p>
+      <div class="modal-acts">
+        <button class="btn lg" data-action="closeSyncGuide" data-i18n="ok"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- defer: app.js self-guards on document.readyState (DOMContentLoaded if
+       loading, else runs immediately), so deferring it is safe and lets the
+       parser download it in parallel without blocking first paint. detect.js
+       above intentionally stays a normal blocking head script — it sets the
+       mobile-device/pc-device class on <html> BEFORE first paint to avoid a
+       layout/theme flash (FOUC), which defer (post-parse) would reintroduce. -->
+  <script src="./app.js" defer></script>
+</body>
+
+</html>

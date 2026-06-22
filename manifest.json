@@ -1,0 +1,48 @@
+{
+  "name": "Study Planner - دستیار درسی تو",
+  "short_name": "Study Planner",
+  "description": "برنامه‌ریز درسی هوشمند با دستیار AI",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "background_color": "#0e1015",
+  "theme_color": "#6c8cff",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["education", "productivity"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "./icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "روز من",
+      "short_name": "روز من",
+      "description": "تسک‌های امروز را ببین",
+      "url": "./?view=myday",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "مرور فاصله‌دار",
+      "short_name": "مرور",
+      "description": "کارت‌های مرور معوق",
+      "url": "./?view=srs",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "فوکوس مود",
+      "short_name": "فوکوس",
+      "description": "تایمر پومودورو",
+      "url": "./?view=focus",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
